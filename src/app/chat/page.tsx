@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useChat } from "@/hooks/useChat"
-import { ThemeToggle } from "@/components/theme-toggle"
 import Cookies from "js-cookie"
 import { 
   Send, 
@@ -105,28 +104,10 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex flex-1 bg-background">
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="border-b px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Brain className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-xl font-semibold">ThinkAI Chat</h1>
-              <p className="text-sm text-muted-foreground">Intelligent Assistant</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" onClick={() => {
-              Cookies.remove('auth-token')
-              window.location.href = "/login"
-            }}>
-              Sign Out
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+
 
         {/* Messages Area */}
         <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>

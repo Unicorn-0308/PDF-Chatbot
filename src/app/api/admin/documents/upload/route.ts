@@ -12,9 +12,10 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.substring(7)
     let isAdmin = false
+    let decoded: any = null
     
     try {
-      const decoded = JSON.parse(Buffer.from(token, 'base64').toString())
+      decoded = JSON.parse(Buffer.from(token, 'base64').toString())
       isAdmin = decoded.role === 'admin'
     } catch (e) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
@@ -86,8 +87,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+// Route segment config for handling file uploads
+export const runtime = 'nodejs'
+export const maxDuration = 60 // Maximum allowed duration for the function

@@ -16,8 +16,10 @@ interface AuthContextType {
   user: User | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
+  signup: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
   isAuthenticated: boolean
+  refreshAuth: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -30,6 +32,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check for existing session on mount
     checkAuth()
+
+    // Re-check auth when window gains focus
+    const handleFocus = () => {
+      checkAuth()
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
   }, [])
 
   const checkAuth = async () => {
@@ -70,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         setUser(data.user)
+        setIsLoading(false)
         Cookies.set('auth-token', data.token, { expires: 7 }) // 7 days
         toast.success('Login successful!')
         
@@ -81,6 +92,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         toast.error(data.error || 'Login failed')
+        setUser(null)
+        setIsLoading(false)
         throw new Error(data.error || 'Login failed')
       }
     } catch (error: any) {
@@ -89,10 +102,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const signup = async (name: string, email: string, password: string) => {
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        toast.success('Account created successfully! Please login.')
+        
+        // Redirect to login page after successful registration
+        setTimeout(() => {
+          router.push('/login')
+        }, 1500)
+      } else {
+        toast.error(data.error || 'Registration failed')
+        throw new Error(data.error || 'Registration failed')
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Registration failed')
+      throw error
+    }
+  }
+
   const logout = () => {
     setUser(null)
+    setIsLoading(false)
     Cookies.remove('auth-token')
-    router.push('/login')
+    router.push('/')  // Navigate to home page instead of login
     toast.success('Logged out successfully')
   }
 
@@ -102,8 +145,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         isLoading,
         login,
+        signup,
         logout,
         isAuthenticated: !!user,
+        refreshAuth: checkAuth,
       }}
     >
       {children}

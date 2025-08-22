@@ -11,9 +11,11 @@ import { Brain, Loader2, ArrowLeft, Eye, EyeOff, User, Mail, Lock, UserPlus } fr
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 import Link from "next/link"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function SignUpPage() {
   const router = useRouter()
+  const { signup } = useAuth()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -74,36 +76,14 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        toast.success("Account created successfully! Please login.")
-        
-        // Redirect to login page after successful registration
-        setTimeout(() => {
-          router.push("/login")
-        }, 1500)
-      } else {
-        toast.error(data.error || "Registration failed")
-        if (data.field) {
-          setErrors({ [data.field]: data.error })
-        }
-      }
-    } catch (error) {
+      await signup(formData.name, formData.email, formData.password)
+      // The signup function in useAuth handles the redirect and success message
+    } catch (error: any) {
       console.error("Sign up error:", error)
-      toast.error("An error occurred. Please try again.")
+      // Error toast is already shown by the signup function in useAuth
+      if (error.field) {
+        setErrors({ [error.field]: error.message })
+      }
     } finally {
       setIsLoading(false)
     }
@@ -122,22 +102,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-4">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-
-      <div className="absolute top-4 left-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.push("/")}
-          className="group"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-          Back to Home
-        </Button>
-      </div>
+    <div className="flex-1 bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-4 py-8">
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}

@@ -6,7 +6,6 @@ import Cookies from "js-cookie"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { 
   Brain,
   Upload,
@@ -293,30 +292,8 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Brain className="h-8 w-8 text-primary" />
-              <div>
-                <h1 className="text-2xl font-bold">ThinkAI Admin</h1>
-                <p className="text-sm text-muted-foreground">System Management Dashboard</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={() => {
-                Cookies.remove('auth-token')
-                window.location.href = "/login"
-              }}>
-                Sign Out
-              </Button>
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="flex-1 bg-background">
+
 
       {/* Navigation Tabs */}
       <div className="border-b">

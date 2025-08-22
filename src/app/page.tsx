@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { AnimatedFeatureCard } from "@/components/shared/AnimatedFeatureCard"
 import { AnimatedWorkflow } from "@/components/shared/AnimatedWorkflow"
 import { Brain, MessageSquare, FileText, Users, ArrowRight, Sparkles, Shield, Zap } from "lucide-react"
@@ -12,18 +11,14 @@ export default function Home() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-      
+    <div className="flex-1 bg-gradient-to-br from-background via-background to-primary/5">
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16 pt-20"
+          className="text-center mb-16 pt-8"
         >
           <div className="flex items-center justify-center mb-6">
             <Brain className="h-20 w-20 text-primary" />

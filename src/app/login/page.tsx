@@ -11,10 +11,11 @@ import { Brain, Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 import Link from "next/link"
-import Cookies from "js-cookie"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function LoginPage() {
   const router = useRouter()
+  const { login } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -31,34 +32,11 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        toast.success("Login successful!")
-        
-        // Store token using js-cookie
-        Cookies.set('auth-token', data.token, { expires: 7 }) // 7 days
-        
-        // Redirect based on user role
-        if (data.user.role === "admin") {
-          router.push("/admin")
-        } else {
-          router.push("/chat")
-        }
-      } else {
-        toast.error(data.error || "Invalid credentials")
-      }
+      await login(email, password)
+      // The login function in useAuth handles the redirect and success message
     } catch (error) {
       console.error("Login error:", error)
-      toast.error("An error occurred. Please try again.")
+      // Error toast is already shown by the login function in useAuth
     } finally {
       setIsLoading(false)
     }
@@ -72,22 +50,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-4">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-
-      <div className="absolute top-4 left-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.push("/")}
-          className="group"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-          Back to Home
-        </Button>
-      </div>
+    <div className="flex-1 bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-4 py-8">
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
