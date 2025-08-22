@@ -9,261 +9,226 @@ interface WorkflowStep {
 }
 
 interface AnimatedWorkflowProps {
-  steps: WorkflowStep[]
+  steps?: WorkflowStep[]
   className?: string
 }
 
-export function AnimatedWorkflow({ steps, className }: AnimatedWorkflowProps) {
+const defaultSteps: WorkflowStep[] = [
+  {
+    number: 1,
+    title: 'Upload Documents',
+    description: 'Admins upload PDF documents to build the knowledge base'
+  },
+  {
+    number: 2,
+    title: 'Ask Questions',
+    description: 'Users interact with the AI through a natural chat interface'
+  },
+  {
+    number: 3,
+    title: 'Get Smart Answers',
+    description: 'Receive accurate responses with source citations from PDFs'
+  }
+]
+
+export function AnimatedWorkflow({ 
+  steps = defaultSteps,
+  className 
+}: AnimatedWorkflowProps) {
   return (
     <div className={cn('relative', className)}>
-      {/* Animated flowing arrow path */}
-      <svg
-        className="absolute inset-0 w-full h-full pointer-events-none"
-        style={{ zIndex: 1 }}
-        preserveAspectRatio="none"
-      >
-        <defs>
-          {/* Gradient for the arrow */}
-          <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="rgb(34, 197, 94)" stopOpacity="0" />
-            <stop offset="50%" stopColor="rgb(34, 197, 94)" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="rgb(34, 197, 94)" stopOpacity="0" />
-          </linearGradient>
-          
-          {/* Glow filter */}
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        {/* Animated path between cards */}
-        <motion.path
-          d="M 120 100 Q 280 50 440 100 T 760 100"
-          stroke="url(#arrowGradient)"
-          strokeWidth="3"
-          fill="none"
-          filter="url(#glow)"
-          strokeLinecap="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{
-            pathLength: { duration: 2, ease: "easeInOut", delay: 0.5 },
-            opacity: { duration: 0.5, delay: 0.5 }
-          }}
+      {/* Animated connecting line for desktop */}
+      <div className="hidden md:block absolute top-6 left-0 right-0 h-0.5 overflow-hidden">
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
+          className="h-full bg-gradient-to-r from-primary/20 via-primary to-primary/20 origin-left"
         />
-
-        {/* Animated arrow head that travels along the path */}
-        <motion.g
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 1, 1, 0] }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            repeatDelay: 1,
-            times: [0, 0.1, 0.9, 1]
-          }}
-        >
-          <motion.circle
-            r="8"
-            fill="rgb(34, 197, 94)"
-            filter="url(#glow)"
-            initial={{ offsetDistance: "0%" }}
-            animate={{ offsetDistance: "100%" }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              repeatDelay: 1,
-              ease: "easeInOut"
-            }}
-            style={{
-              offsetPath: "path('M 120 100 Q 280 50 440 100 T 760 100')",
-            }}
-          >
-            <animateMotion
-              dur="3s"
-              repeatCount="indefinite"
-              path="M 120 100 Q 280 50 440 100 T 760 100"
-            >
-              <mpath href="#flowPath" />
-            </animateMotion>
-          </motion.circle>
-        </motion.g>
-
-        {/* Energy particles */}
-        {[...Array(5)].map((_, i) => (
-          <motion.circle
-            key={i}
-            r="3"
-            fill="rgb(34, 197, 94)"
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: [0, 0.8, 0],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              delay: i * 0.6,
-              repeatDelay: 1,
-            }}
-          >
-            <animateMotion
-              dur="3s"
-              repeatCount="indefinite"
-              begin={`${i * 0.6}s`}
-              path="M 120 100 Q 280 50 440 100 T 760 100"
-            />
-          </motion.circle>
-        ))}
-      </svg>
+      </div>
 
       {/* Workflow steps */}
-      <div className="grid md:grid-cols-3 gap-8 relative" style={{ zIndex: 2 }}>
+      <div className="grid md:grid-cols-3 gap-8 relative">
         {steps.map((step, index) => (
           <motion.div
             key={step.number}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.6,
+            transition={{ 
+              duration: 0.6, 
               delay: index * 0.2,
               ease: [0.21, 0.47, 0.32, 0.98]
             }}
-            whileHover={{ 
-              scale: 1.05,
-              transition: { duration: 0.2 }
-            }}
-            className="relative group"
+            className="text-center relative"
           >
-            {/* Card glow effect */}
+            {/* Animated step number */}
             <motion.div
-              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{
-                background: 'radial-gradient(circle at center, rgba(34, 197, 94, 0.1), transparent 70%)',
-                filter: 'blur(20px)'
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ 
+                duration: 0.5, 
+                delay: index * 0.2 + 0.2,
+                type: "spring",
+                stiffness: 200,
+                damping: 15
               }}
-            />
-
-            {/* Card content */}
-            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 text-center transition-all duration-300 group-hover:border-primary/30 group-hover:shadow-xl h-full">
-              {/* Animated number circle */}
+              className="relative inline-block mb-4"
+            >
+              {/* Pulsing ring effect */}
               <motion.div
-                className="relative mx-auto mb-6"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.6 }}
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.5, 0, 0.5]
+                }}
+                transition={{
+                  duration: 2,
+                  delay: index * 0.3,
+                  repeat: Infinity,
+                  repeatDelay: 1
+                }}
+                className="absolute inset-0 bg-primary rounded-full"
+              />
+              
+              {/* Step number container */}
+              <motion.div
+                whileHover={{ 
+                  scale: 1.1,
+                  rotate: 360,
+                  transition: { duration: 0.3 }
+                }}
+                className="relative bg-primary text-primary-foreground rounded-full w-12 h-12 flex items-center justify-center mx-auto font-bold text-xl shadow-lg cursor-pointer"
               >
+                {step.number}
+              </motion.div>
+
+              {/* Connecting dots for mobile */}
+              {index < steps.length - 1 && (
                 <motion.div
-                  className="absolute inset-0 bg-primary/20 rounded-full blur-xl"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: index * 0.2 + 0.5 }}
+                  className="md:hidden absolute top-full left-1/2 transform -translate-x-1/2 mt-2"
+                >
+                  <div className="flex flex-col gap-1">
+                    {[...Array(3)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        animate={{
+                          opacity: [0.3, 1, 0.3],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          delay: i * 0.1,
+                          repeat: Infinity,
+                        }}
+                        className="w-1 h-1 bg-primary/50 rounded-full"
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+
+            {/* Step content */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ 
+                duration: 0.5, 
+                delay: index * 0.2 + 0.4 
+              }}
+            >
+              <motion.h3 
+                className="font-semibold mb-2 text-foreground"
+                whileHover={{ 
+                  color: 'hsl(var(--primary))',
+                  transition: { duration: 0.2 }
+                }}
+              >
+                {step.title}
+              </motion.h3>
+              <motion.p 
+                className="text-sm text-muted-foreground leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ 
+                  duration: 0.5, 
+                  delay: index * 0.2 + 0.5 
+                }}
+              >
+                {step.description}
+              </motion.p>
+            </motion.div>
+
+            {/* Arrow indicator for desktop - positioned on the connecting line */}
+            {index < steps.length - 1 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ 
+                  duration: 0.5, 
+                  delay: index * 0.2 + 0.6 
+                }}
+                className="hidden md:block absolute top-6 -right-4 transform -translate-y-1/2 text-primary/50 z-10"
+              >
+                <motion.svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
                   animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.5, 0.8, 0.5]
+                    x: [0, 5, 0],
                   }}
                   transition={{
                     duration: 2,
                     repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: index * 0.3
+                    ease: "easeInOut"
                   }}
-                />
-                <div className="relative bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full w-16 h-16 flex items-center justify-center mx-auto font-bold text-2xl shadow-lg">
-                  {step.number}
-                </div>
-              </motion.div>
-
-              {/* Text content */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: index * 0.2 + 0.3, duration: 0.5 }}
-              >
-                <h3 className="font-semibold text-lg mb-3 text-foreground group-hover:text-primary transition-colors duration-300">
-                  {step.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {step.description}
-                </p>
-              </motion.div>
-
-              {/* Connection indicator */}
-              {index < steps.length - 1 && (
-                <motion.div
-                  className="absolute -right-4 top-1/2 transform -translate-y-1/2 hidden md:block"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.2 + 0.5, duration: 0.3 }}
                 >
-                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                    <motion.div
-                      className="w-4 h-4 bg-primary rounded-full"
-                      animate={{
-                        scale: [1, 1.5, 1],
-                        opacity: [0.5, 1, 0.5]
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: index * 0.5
-                      }}
-                    />
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Progress indicator at bottom */}
-              <motion.div
-                className="absolute bottom-0 left-0 right-0 h-1 bg-primary/20 rounded-b-2xl overflow-hidden"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{
-                  duration: 1.5,
-                  delay: index * 0.3 + 0.5,
-                  ease: "easeOut"
-                }}
-                style={{ transformOrigin: 'left' }}
-              >
-                <motion.div
-                  className="h-full bg-gradient-to-r from-primary/50 to-primary"
-                  animate={{
-                    x: ['-100%', '100%']
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    delay: index * 0.5,
-                    ease: "linear"
-                  }}
-                />
+                  <path
+                    d="M9 6L15 12L9 18"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </motion.svg>
               </motion.div>
-            </div>
+            )}
+
+            {/* Decorative elements */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.1 }}
+              transition={{ delay: index * 0.2 + 0.8 }}
+              className="absolute inset-0 -z-10"
+            >
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary rounded-full blur-3xl" />
+            </motion.div>
           </motion.div>
         ))}
       </div>
 
-      {/* Floating particles for ambiance */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={`particle-${i}`}
-          className="absolute w-2 h-2 bg-primary/30 rounded-full"
-          style={{
-            left: `${20 + i * 15}%`,
-            top: `${30 + (i % 2) * 40}%`,
-          }}
-          animate={{
-            y: [-10, 10, -10],
-            opacity: [0.3, 0.8, 0.3],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 3 + i * 0.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: i * 0.2,
-          }}
-        />
-      ))}
+      {/* Progress indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="mt-8 flex justify-center gap-2"
+      >
+        {steps.map((_, index) => (
+          <motion.div
+            key={index}
+            initial={{ width: 8 }}
+            animate={{ width: index === 1 ? 24 : 8 }}
+            transition={{ 
+              duration: 0.3,
+              delay: 1.5 + index * 0.1
+            }}
+            className="h-2 bg-primary/30 rounded-full"
+          />
+        ))}
+      </motion.div>
     </div>
   )
 }

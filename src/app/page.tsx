@@ -77,25 +77,7 @@ export default function Home() {
           className="max-w-5xl mx-auto mb-16"
         >
           <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-          <AnimatedWorkflow
-            steps={[
-              {
-                number: 1,
-                title: "Upload Documents",
-                description: "Admins upload PDF documents to build the knowledge base"
-              },
-              {
-                number: 2,
-                title: "Ask Questions",
-                description: "Users interact with the AI through a natural chat interface"
-              },
-              {
-                number: 3,
-                title: "Get Smart Answers",
-                description: "Receive accurate responses with source citations from PDFs"
-              }
-            ]}
-          />
+          <AnimatedWorkflow />
         </motion.div>
 
         {/* User Types Section */}
