@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import Cookies from "js-cookie"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +12,7 @@ import {
   Upload,
   FileText,
   Users,
+  User,
   MessageSquare,
   TrendingUp,
   Settings,
@@ -68,7 +70,7 @@ interface AIModel {
   isActive: boolean
 }
 
-interface User {
+interface UserData {
   _id: string
   email: string
   name: string
@@ -100,7 +102,7 @@ export default function AdminDashboard() {
   ])
   const [isUploading, setIsUploading] = useState(false)
   const [showModelDropdown, setShowModelDropdown] = useState(false)
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<UserData[]>([])
   const [isLoadingUsers, setIsLoadingUsers] = useState(false)
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null)
   const [analyticsData, setAnalyticsData] = useState<any>(null)
@@ -146,10 +148,7 @@ export default function AdminDashboard() {
     setIsUploading(true)
     
     try {
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('auth-token='))
-        ?.split('=')[1]
+      const token = Cookies.get('auth-token')
 
       for (const file of Array.from(files)) {
         const formData = new FormData()
@@ -211,10 +210,7 @@ export default function AdminDashboard() {
   const fetchUsers = async () => {
     setIsLoadingUsers(true)
     try {
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('auth-token='))
-        ?.split('=')[1]
+      const token = Cookies.get('auth-token')
 
       const response = await fetch('/api/admin/users', {
         headers: {
@@ -243,10 +239,7 @@ export default function AdminDashboard() {
   const fetchAnalytics = async () => {
     setIsLoadingAnalytics(true)
     try {
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('auth-token='))
-        ?.split('=')[1]
+      const token = Cookies.get('auth-token')
 
       const response = await fetch('/api/admin/analytics', {
         headers: {
@@ -271,10 +264,7 @@ export default function AdminDashboard() {
   const handleUpdateUserRole = async (userId: string, newRole: 'user' | 'admin') => {
     setUpdatingUserId(userId)
     try {
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('auth-token='))
-        ?.split('=')[1]
+      const token = Cookies.get('auth-token')
 
       const response = await fetch(`/api/admin/users/${userId}/role`, {
         method: 'PATCH',
@@ -317,7 +307,7 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="sm" onClick={() => {
-                document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC"
+                Cookies.remove('auth-token')
                 window.location.href = "/login"
               }}>
                 Sign Out

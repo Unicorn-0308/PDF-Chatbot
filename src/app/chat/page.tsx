@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useChat } from "@/hooks/useChat"
 import { ThemeToggle } from "@/components/theme-toggle"
+import Cookies from "js-cookie"
 import { 
   Send, 
   Mic, 
@@ -118,7 +119,7 @@ export default function ChatPage() {
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="sm" onClick={() => {
-              document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC"
+              Cookies.remove('auth-token')
               window.location.href = "/login"
             }}>
               Sign Out
@@ -156,14 +157,14 @@ export default function ChatPage() {
                           <ReactMarkdown
                             className="prose prose-sm dark:prose-invert max-w-none"
                             components={{
-                              code({ node, inline, className, children, ...props }) {
+                              code({ className, children, ...props }: any) {
                                 const match = /language-(\w+)/.exec(className || "")
-                                return !inline && match ? (
+                                const isInline = !match
+                                return !isInline ? (
                                   <SyntaxHighlighter
-                                    style={oneDark}
+                                    style={oneDark as any}
                                     language={match[1]}
                                     PreTag="div"
-                                    {...props}
                                   >
                                     {String(children).replace(/\n$/, "")}
                                   </SyntaxHighlighter>

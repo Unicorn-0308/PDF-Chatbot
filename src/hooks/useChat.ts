@@ -26,15 +26,7 @@ export interface PDFSource {
 }
 
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: "Hello! I'm ThinkAI, your intelligent assistant. I can help you with questions and provide information based on the uploaded documents. How can I assist you today?",
-      timestamp: new Date(),
-      sources: []
-    }
-  ])
+  const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [conversationId] = useState(generateId())
   const abortControllerRef = useRef<AbortController | null>(null)

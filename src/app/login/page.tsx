@@ -11,6 +11,7 @@ import { Brain, Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 import Link from "next/link"
+import Cookies from "js-cookie"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -43,8 +44,8 @@ export default function LoginPage() {
       if (response.ok) {
         toast.success("Login successful!")
         
-        // Store token in cookie (handled by auth context)
-        document.cookie = `auth-token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}`
+        // Store token using js-cookie
+        Cookies.set('auth-token', data.token, { expires: 7 }) // 7 days
         
         // Redirect based on user role
         if (data.user.role === "admin") {

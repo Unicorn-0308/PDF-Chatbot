@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         setUser(data.user)
-        Cookies.set('auth-token', data.token, { expires: 7 })
+        Cookies.set('auth-token', data.token, { expires: 7 }) // 7 days
         toast.success('Login successful!')
         
         // Redirect based on role
